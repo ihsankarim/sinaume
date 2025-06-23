@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: lms-laravel-app
+    container_name: lms-laravel-app
+    volumes:
+      - ./:/var/www
+    depends_on:
+      - db
+    networks:
+      - laravel
+    
+  nginx:
+    image: nginx:alpine
+    container_name: nginx_server_lms
+    ports:
+      - "8000:80"
+    volumes: 
+      - ./:/var/www
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      - laravel
+
+
+  db: 
+    image: postgres:15
+    container_name: lms_postgres_db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: lms_db
+      POSTGRES_USER: ihsan
+      POSTGRES_PASSWORD: ihsanroot
+    volumes:
+      - pgdata:/var/lib/postgres/data
+    networks:
+      - laravel
+
+volumes:
+  pgdata:
+
+networks:
+  laravel:
+    driver: bridge
