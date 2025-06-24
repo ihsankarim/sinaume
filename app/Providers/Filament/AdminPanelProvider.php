@@ -18,6 +18,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Filament\Pages\Dashboard;
+use Filament\Facades\Filament;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -55,7 +56,20 @@ class AdminPanelProvider extends PanelProvider
                 DispatchServingFilamentEvent::class,
             ])
             ->authMiddleware([
-                Authenticate::class,
+                \App\Http\Middleware\CheckRole::class . ':admin',
             ]);
+            // ->authMiddleware([
+            //     Authenticate::class,
+            // ]);
+            // ->authMiddleware([
+            //     Authenticate::class,
+            //     fn ($request, $next) => auth()->user()?->hasRole('admin') ? $next($request) : abort(403),
+            // ]);
     }
+
+    // public function boot(): void {
+    //     Filament::serving(function() {
+    //         abort_unless(auth()->user()?->role === 'admin', 403);
+    //     });
+    // }
 }
